@@ -1,0 +1,87 @@
+
+boot.o：     文件格式 elf32-i386
+
+
+Disassembly of section .text:
+
+00000000 <waitDisk>:
+   0:	55                   	push   %ebp
+   1:	89 e5                	mov    %esp,%ebp
+   3:	ba f7 01 00 00       	mov    $0x1f7,%edx
+   8:	ec                   	in     (%dx),%al
+   9:	25 c0 00 00 00       	and    $0xc0,%eax
+   e:	83 f8 40             	cmp    $0x40,%eax
+  11:	75 f5                	jne    8 <waitDisk+0x8>
+  13:	5d                   	pop    %ebp
+  14:	c3                   	ret    
+  15:	8d 76 00             	lea    0x0(%esi),%esi
+
+00000018 <readSect>:
+  18:	55                   	push   %ebp
+  19:	89 e5                	mov    %esp,%ebp
+  1b:	53                   	push   %ebx
+  1c:	8b 4d 0c             	mov    0xc(%ebp),%ecx
+  1f:	ba f7 01 00 00       	mov    $0x1f7,%edx
+  24:	ec                   	in     (%dx),%al
+  25:	25 c0 00 00 00       	and    $0xc0,%eax
+  2a:	83 f8 40             	cmp    $0x40,%eax
+  2d:	75 f5                	jne    24 <readSect+0xc>
+  2f:	ba f2 01 00 00       	mov    $0x1f2,%edx
+  34:	b0 01                	mov    $0x1,%al
+  36:	ee                   	out    %al,(%dx)
+  37:	ba f3 01 00 00       	mov    $0x1f3,%edx
+  3c:	88 c8                	mov    %cl,%al
+  3e:	ee                   	out    %al,(%dx)
+  3f:	89 c8                	mov    %ecx,%eax
+  41:	c1 f8 08             	sar    $0x8,%eax
+  44:	ba f4 01 00 00       	mov    $0x1f4,%edx
+  49:	ee                   	out    %al,(%dx)
+  4a:	89 c8                	mov    %ecx,%eax
+  4c:	c1 f8 10             	sar    $0x10,%eax
+  4f:	ba f5 01 00 00       	mov    $0x1f5,%edx
+  54:	ee                   	out    %al,(%dx)
+  55:	89 c8                	mov    %ecx,%eax
+  57:	c1 f8 18             	sar    $0x18,%eax
+  5a:	83 c8 e0             	or     $0xffffffe0,%eax
+  5d:	ba f6 01 00 00       	mov    $0x1f6,%edx
+  62:	ee                   	out    %al,(%dx)
+  63:	ba f7 01 00 00       	mov    $0x1f7,%edx
+  68:	b0 20                	mov    $0x20,%al
+  6a:	ee                   	out    %al,(%dx)
+  6b:	90                   	nop
+  6c:	ec                   	in     (%dx),%al
+  6d:	25 c0 00 00 00       	and    $0xc0,%eax
+  72:	83 f8 40             	cmp    $0x40,%eax
+  75:	75 f5                	jne    6c <readSect+0x54>
+  77:	8b 4d 08             	mov    0x8(%ebp),%ecx
+  7a:	8d 99 00 02 00 00    	lea    0x200(%ecx),%ebx
+  80:	ba f0 01 00 00       	mov    $0x1f0,%edx
+  85:	8d 76 00             	lea    0x0(%esi),%esi
+  88:	ed                   	in     (%dx),%eax
+  89:	89 01                	mov    %eax,(%ecx)
+  8b:	83 c1 04             	add    $0x4,%ecx
+  8e:	39 d9                	cmp    %ebx,%ecx
+  90:	75 f6                	jne    88 <readSect+0x70>
+  92:	5b                   	pop    %ebx
+  93:	5d                   	pop    %ebp
+  94:	c3                   	ret    
+  95:	8d 76 00             	lea    0x0(%esi),%esi
+
+00000098 <bootMain>:
+  98:	55                   	push   %ebp
+  99:	89 e5                	mov    %esp,%ebp
+  9b:	56                   	push   %esi
+  9c:	53                   	push   %ebx
+  9d:	31 f6                	xor    %esi,%esi
+  9f:	bb 01 00 00 00       	mov    $0x1,%ebx
+  a4:	53                   	push   %ebx
+  a5:	56                   	push   %esi
+  a6:	e8 fc ff ff ff       	call   a7 <bootMain+0xf>
+  ab:	43                   	inc    %ebx
+  ac:	81 c6 00 02 00 00    	add    $0x200,%esi
+  b2:	58                   	pop    %eax
+  b3:	5a                   	pop    %edx
+  b4:	81 fb c9 00 00 00    	cmp    $0xc9,%ebx
+  ba:	75 e8                	jne    a4 <bootMain+0xc>
+  bc:	a1 1c 00 00 00       	mov    0x1c,%eax
+  c1:	0f 0b                	ud2    
