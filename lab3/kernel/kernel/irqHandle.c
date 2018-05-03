@@ -75,7 +75,7 @@ void TimerHandle(struct TrapFrame *tf) {
 				tmp->next=blk;
 			}
 		}
-
+		blk=blk->next;
 	}
 	//assert(0);
 	if(pcb_run==NULL||pcb_run->state==PROCESS_RUNNABLE)
