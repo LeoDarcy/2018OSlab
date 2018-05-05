@@ -49,7 +49,7 @@ void process_switch()
 	//加载第一个
 	//putChar('P');
 	putChar('0' + pcb_run->pid);
-	tss.esp0 = (uint32_t)&(pcb_run->StackTop);
+	tss.esp0 = (uint32_t)&(pcb_run->stack[MAX_STACK_SIZE]);
         tss.ss0  = KSEL(SEG_KDATA);
 	int index=0;
 	for(;index<MAX_PCB_NUM;index++)

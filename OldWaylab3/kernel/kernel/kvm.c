@@ -46,7 +46,7 @@ void initSeg() {
 	tss.ss0=KSEL(SEG_KDATA);
 	__asm__ __volatile__("ltr %%ax":: "a" (KSEL(SEG_TSS)));
 */
-	tss.esp0 = (uint32_t)&pcb[0].StackTop;
+	tss.esp0 = (uint32_t)&pcb[0].stack[MAX_STACK_SIZE];
 	tss.ss0  = KSEL(SEG_KDATA);
 	__asm__ __volatile__("ltr %%ax":: "a" (KSEL(SEG_TSS)));
 
@@ -105,12 +105,17 @@ void enterUserSpace(uint32_t entry) {
 	pcb_run=&pcb[index];
 	pcb[index].tf.ss = USEL(SEG_UDATA);
 	pcb[index].tf.esp = STACK_BEGIN + PRO_MEM;
+  	asm volatile("sti");
+    	asm volatile("pushfl");  // %eflags
+   	asm volatile("cli");
+	asm volatile("movl (%%esp), %0" : "=r"(pcb[index].tf.eflags) :);
+
+	pcb[index].tf.ss = USEL(SEG_UDATA);
+	pcb[index].tf.esp = STACK_BEGIN + PRO_MEM;
 	pcb[index].tf.eip = entry;
 	pcb[index].tf.cs = USEL(SEG_UCODE);
-	pcb_run->next=NULL;
-
 	//pcb_run=&pcb[index];
-	
+	pcb_run->next=NULL;
 	//注意这里我们需要修改一点trapframe的内容 因为要根据实际情况下的pcb改变
 
 	//这一行可能有问题
@@ -120,14 +125,9 @@ void enterUserSpace(uint32_t entry) {
 	__asm__ __volatile__("movl (%%esp),%0":"=r"(pcb[index].tf.eflags));	
 	__asm__ __volatile__("pushl %0"::"r"(USEL(SEG_UCODE)));
 	__asm__ __volatile__("pushl %0"::"r"(entry));*/
-
-
-	__asm__ __volatile__("sti");
-    	__asm__ __volatile__("pushfl");  // %eflags
-   	__asm__ __volatile__("cli");
-	__asm__ __volatile__("movl (%%esp), %0" : "=r"(pcb[index].tf.eflags) :);
-	__asm__ __volatile__("movl %0, %%esp" ::"r"(&pcb_run->tf.eip));
-	__asm__ __volatile__("iret");    
+	
+	asm volatile("movl %0, %%esp" ::"r"(&pcb_run->tf.eip));
+	asm volatile("iret");    
 
 
 }

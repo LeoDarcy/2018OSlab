@@ -29,8 +29,15 @@ struct StackFrame {
 
 struct ProcessTable
 {
-	uint8_t stack[MAX_STACK_SIZE];
-	struct StackFrame tf;
+	/*uint8_t stack[MAX_STACK_SIZE];
+	struct StackFrame tf;*/
+	union {
+        	uint8_t stack[MAX_STACK_SIZE];  // kernel stack
+        	struct {
+            		uint8_t pad[MAX_STACK_SIZE - sizeof(struct TrapFrame)];
+            		struct StackFrame tf;
+        		} __attribute__((packed));
+    	};
 	int StackTop;
 	int state;
 	int timeCount;
